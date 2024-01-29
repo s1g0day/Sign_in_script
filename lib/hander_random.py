@@ -8,7 +8,6 @@ print(requests_headers())
 
 import random
 
-# 生成随机refener
 def random_referer():
     dominio = ['Adzuna', 'Bixee', 'CareerBuilder', 'Craigslist', 'Dice', 'Eluta.ca', 'Hotjobs', 'JobStreet', 'Incruit', 'Indeed', 'Glassdoor', 'LinkUp', 'Monster', 'Naukri',
         'Yahoo', 'Legal', 'GoogleScholar', 'Lexis', 'Manupatra', 'Quicklaw', 'WestLaw', 'Medical', 'Bing Health', 'Bioinformatic', 'CiteAb', 'EB-eye', 'Entrez', 'mtv', 'ubuntu',
@@ -47,7 +46,7 @@ def random_referer():
     ]
     return "http://www." + random.choice(dominio).lower() + "." + random.choice(gTLD) + "." + random.choice(locais) + "/" + random.choice(pasta) + "/" + random.choice(arquivo) + "." + random.choice(ext) 
 
-# 生成随机useragent
+
 def random_useragent():
     agentBrowser = ['Firefox', 'Safari', 'Opera', 'Flock', 'Internet Explorer', 'Seamonkey', 'Tor Browser', 'GNU IceCat', 'CriOS', 'TenFourFox',
         'SeaMonkey', 'B-l-i-t-z-B-O-T', 'Konqueror', 'Mobile', 'Konqueror', 'Netscape', 'Chrome', 'Dragon', 'SeaMonkey', 'Maxthon', 'IBrowse',
@@ -84,26 +83,6 @@ def random_useragent():
     ] 
     return random.choice(agentBrowser) + "/" + str(random.randint(1,20)) + "." + str(random.randint(1,20)) + " (" + random.choice(agentSistema) + " " + str(random.randint(1,7)) + "." + str(random.randint(0,9)) + "; " + random.choice(locais) + ")"
 
-
-
-# 生成随机的X-Forwarded-For、X-Originating-Ip、X-Remote-Addr、X-Remote-Ip
-def generate_random_headers_X():
-    # 生成随机IP地址
-    def generate_random_ip():
-        ip = []
-        for _ in range(4):
-            ip.append(str(random.randint(0, 255)))
-        return '.'.join(ip)
-    
-    headers = {
-        'X-Forwarded-For': generate_random_ip(),
-        'X-Originating-Ip': generate_random_ip(),
-        'X-Remote-Addr': generate_random_ip(),
-        'X-Remote-Ip': generate_random_ip()
-    }
-    return headers
-
-# 合并上述函数生成随机headers
 def requests_headers():
     headers = {
         'User-Agent':random_useragent(),
@@ -117,8 +96,4 @@ def requests_headers():
         'Content-Type': 'application/x-www-form-urlencoded',
         'Connection': 'close'
     }
-    random_headers = generate_random_headers_X()
-    headers = headers.copy()  # 复制现有的请求头
-    headers.update(random_headers)  # 将随机生成的请求头追加到现有的请求头
-
     return headers

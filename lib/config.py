@@ -2,11 +2,11 @@
 # coding:utf-8
 def config():
     push_config = {
-        'domain': "https://www.t00ls.com",
-        'uname': 'uname',  # 帐号
-        'pswd': 'pswd',  # 密码
-        'qesnum': 1,  # 安全提问 参考下面
-        'qan': 'qan',  # 安全提问答案
+        't00ls_domain': "https://www.t00ls.com",
+        't00ls_uname': 't00ls_uname',  # 帐号
+        't00ls_pswd': 't00ls_pswd',  # 密码
+        't00ls_qesnum': 1,  # 安全提问 参考下面
+        't00ls_qan': 't00ls_qan',  # 安全提问答案
 
         # 0 = 没有安全提问
         # 1 = 母亲的名字

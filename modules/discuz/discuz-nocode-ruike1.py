@@ -138,7 +138,7 @@ def check_login_status(s: req_Session, number_c: int, domain: str, username:str)
     res.encoding = res_test[0][0]   # 编码 charset
     test_title = res_test[0][1]     # 用户id discuz_uid ,游客为 0
     if len(test_title) != 0:  # 确保正则匹配到了内容，防止出现数组索引越界的情况
-        if(test_title != 0 ):
+        if(test_title[0] != 0):
             print("第", number_c, "个帐户[", username, "]登录[", domain ,"]成功！")
             return True
         else:
@@ -201,11 +201,10 @@ def get_points(s: req_Session, domain: str, username: str, number_c: int):
     else:
         print("请检查你的帐户是否正确！")
 
-def main():
+def discuz_main():
 
     login_list = [
-        {'domain': 'https://www.guokems.com', 'username': 'username', 'password': 'password'},
-        # {'domain': 'https://hostloc.com', 'username': 'username', 'password': 'password'}
+        {'domain': 'https://www.ruike1.com/', 'username': 'username', 'password': 'password'},
     ]
     
     today = datetime.now()
@@ -232,7 +231,7 @@ def main():
 if __name__ == '__main__':
     print("*" * 30)
     start = int(time.time())
-    main()
+    discuz_main()
     stop = int(time.time())
     print("运行时间: ",stop-start,"s")
     print("*" * 30)
