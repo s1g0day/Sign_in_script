@@ -3,21 +3,8 @@ import time
 import urllib
 import random
 from datetime import datetime
+from modules.t00ls.src.get_captcha import run
 from modules.t00ls.src.get_domain import getdomain
-
-def run():
-    return
-    # # 验证码识别
-    
-    # if(len(srcid) > 4): 
-    #     print("验证码平台出错,错误信息: ", srcid)
-    #     break
-    # elif(len(srcid) < 4): 
-    #     print("验证码识别错误： ", srcid)
-    #     continue
-    # else:
-
-
 
 def check_domain(s, domain, rlogin):
     today = datetime.now()
@@ -49,15 +36,15 @@ def domain_name_query(s, domain, rlogin, rlogj):
             print("域名查询失败")
         else:
             print("尚未解决 cloudflare turnstile 验证码")
-            resjson = getdomain()
-            for i in range(3):
-                domainurl = resjson["data"]["list"][i]["domain"]
-                print("第[ %d ]次查询: `%s`" % (frequency,domainurl))
-                frequency += 1
+            # resjson = getdomain()
+            # for i in range(3):
+            #     domainurl = resjson["data"]["list"][i]["domain"]
+            #     print("第[ %d ]次查询: `%s`" % (frequency,domainurl))
+            #     frequency += 1
 
-                '''获取验证码'''
-                # srcid = run()
-                # print ('正在查询域名:', domainurl, "验证码为:", srcid)
+                # '''获取验证码'''
+                # srcid = run(s, domain, tt_username, tt_password, tt_typeid)
+                # print('正在查询域名:', domainurl, "验证码为:", srcid)
                 # querydomainsubmit = urllib.parse.quote("查询")
                 # postdata = {
                 #     'domain': domainurl,
@@ -67,20 +54,20 @@ def domain_name_query(s, domain, rlogin, rlogj):
                 # }
                 # rpost = s.post(domain+'/domain.html', data=postdata)
                 # if ("域名查询可以积累域名的信息，为进一步了解做准备，不要为了TuBi而查询。" in rpost.text):
-                #     print ("每日域名查询成功，+1 tubi！")
+                #     print("每日域名查询成功，+1 tubi！")
                 #     break
                 # elif("Error:查询出错！域名不存在或接口有误，返回为空！" in rpost.text):
-                #     print ("此域名:", domainurl, "不存在！")
+                #     print("此域名:", domainurl, "不存在！")
                 #     print('随机延时 5-10 秒，继续查询...')
                 #     time.sleep(random.randint(5, 10))
                 #     continue
                 # elif("Error:域名不符合规范3" in rpost.text):
-                #     print ("域名不符合规范！")
+                #     print("域名不符合规范！")
                 #     print('随机延时 5-10 秒，继续查询...')
                 #     time.sleep(random.randint(5, 10))
                 #     continue
                 # elif("持有人信息" in rpost.text):
-                #     print ("域名查询成功,但未获得tubi,可能是域名不合格")
+                #     print("域名查询成功,但未获得tubi,可能是域名不合格")
                 #     print('随机延时 5-10 秒，继续查询...')
                 #     time.sleep(random.randint(5, 10))
                 #     continue

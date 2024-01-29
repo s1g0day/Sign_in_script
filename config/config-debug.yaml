@@ -1,0 +1,43 @@
+# ruike 多账户配置
+discuz_ruike_domain: "https://www.ruike1.com/"
+discuz_ruike_username: "username"
+discuz_ruike_password: "password"
+# discuz_ruike_username1: "username1"
+# discuz_ruike_password1: "password1"
+# discuz_ruike_username2: "username2"
+# discuz_ruike_password2: "password2"
+
+# hostloc 多账户配置
+discuz_hostloc_domain: "https://hostloc.com"
+discuz_hostloc_username: "username"
+discuz_hostloc_password: "password"
+# discuz_hostloc_username1: "username"
+# discuz_hostloc_password1: "password1"
+# discuz_hostloc_username2: "username2"
+# discuz_hostloc_password2: "password2"
+
+# t00ls 多账户配置
+# 安全提问 0 = 没有安全提问 1 = 母亲的名字 2 = 爷爷的名字 3 = 父亲出生的城市 4 = 您其中一位老师的名字 5 = 您个人计算机的型号 6 = 您最喜欢的餐馆名称 7 = 驾驶执照的最后四位数字
+t00ls_domain: "https://www.t00ls.com"
+t00ls_username: "t00ls_username"  # 帐号
+t00ls_password: "t00ls_password"  # 密码
+t00ls_qesnum: 1  # 安全提问
+t00ls_qan: "t00ls_qan"  # 安全提问答案
+# t00ls_username1: "t00ls_username"  # 帐号
+# t00ls_password1: "t00ls_password1"  # 密码
+# t00ls_qesnum1: 1  # 安全提问
+# t00ls_qan1: "t00ls_qan1"  # 安全提问答案
+
+# 到期提醒
+renew_type: "VPS"
+renew_domain: "`https://cloud.tencent.com/`"
+renew_expiration_date: "2024-11-18"
+renew_type_1: "VPS"
+renew_domain_1: "`https://cloud.tencent.com/`"
+renew_expiration_date_1: "2024-05-21"
+renew_type_2: "Domain"
+renew_domain_2: "`https://www.namesilo.com/`"
+renew_expiration_date_2: "2024-04-24"
+renew_type_3: "voice"
+renew_domain_3: "`https://voice.google.com/`"
+renew_expiration_date_3: "2024-12-01"

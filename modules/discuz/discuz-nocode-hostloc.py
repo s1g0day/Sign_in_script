@@ -1,81 +1,14 @@
 # -*- coding: utf8 -*-
-import os
-import time
-import random
 import re
-import textwrap
-import requests
-import sys
-import io
+import time
+import yaml
+import random
 from datetime import datetime
-from pyaes import AESModeOfOperationCBC
 from requests import Session as req_Session
-
-
-sys.stdout = io.TextIOWrapper(sys.stdout.buffer,encoding='utf-8')
-
-
-# 使用Python实现防CC验证页面中JS写的的toNumbers函数
-def toNumbers(secret: str) -> list:
-    text = []
-    for value in textwrap.wrap(secret, 2):
-        text.append(int(value, 16))
-    return text
-
-
-# 不带Cookies访问论坛首页，检查是否开启了防CC机制，将开启状态、AES计算所需的参数全部放在一个字典中返回
-def check_anti_cc(domain: str) -> dict:
-    result_dict = {}
-    headers = {
-        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36"
-    }
-
-    res = requests.get(domain, headers=headers)
-    aes_keys = re.findall(r'toNumbers\("(.*?)"\)', res.text)
-    cookie_name = re.findall(r'cookie="(.*?)="', res.text)
-
-    if len(aes_keys) != 0:  # 开启了防CC机制
-        print("检测到防 CC 机制开启！")
-        if len(aes_keys) != 3 or len(cookie_name) != 1:  # 正则表达式匹配到了参数，但是参数个数不对（不正常的情况）
-            result_dict["ok"]    = 0
-        else:  # 匹配正常时将参数存到result_dict中
-            result_dict["ok"] = 1
-            result_dict["cookie_name"] = cookie_name[0]
-            result_dict["a"] = aes_keys[0]
-            result_dict["b"] = aes_keys[1]
-            result_dict["c"] = aes_keys[2]
-    else:
-        pass
-
-    return result_dict
-
-
-# 在开启了防CC机制时使用获取到的数据进行AES解密计算生成一条Cookie（未开启防CC机制时返回空Cookies）
-def gen_anti_cc_cookies(domain: str) -> dict:
-    cookies = {}
-    anti_cc_status = check_anti_cc(domain)
-
-    if anti_cc_status:  # 不为空，代表开启了防CC机制
-        if anti_cc_status["ok"] == 0:
-            print("防 CC 验证过程所需参数不符合要求，页面可能存在错误！")
-        else:  # 使用获取到的三个值进行AES Cipher-Block Chaining解密计算以生成特定的Cookie值用于通过防CC验证
-            print("自动模拟计尝试通过防 CC 验证")
-            a = bytes(toNumbers(anti_cc_status["a"]))
-            b = bytes(toNumbers(anti_cc_status["b"]))
-            c = bytes(toNumbers(anti_cc_status["c"]))
-            cbc_mode = AESModeOfOperationCBC(a, b)
-            result = cbc_mode.decrypt(c)
-
-            name = anti_cc_status["cookie_name"]
-            cookies[name] = result.hex()
-    else:
-        pass
-
-    return cookies
-
+from modules.discuz.src.gen_anti_cc_cookies import gen_anti_cc_cookies_main
 
 # 登录帐户
-def login(domain: str, username: str, password: str) -> req_Session:
+def login(domain: str, username: str, password: str):
     headers = {
         "user-agent": "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:23.0) Gecko/20100101 Firefox/23.0",
         "origin": domain,
@@ -93,7 +26,7 @@ def login(domain: str, username: str, password: str) -> req_Session:
 
     s = req_Session()
     s.headers.update(headers)
-    s.cookies.update(gen_anti_cc_cookies(domain))
+    s.cookies.update(gen_anti_cc_cookies_main(domain))
     res = s.post(url=login_url, data=login_data)
     res.raise_for_status()
     tsignin(s, domain)
@@ -105,7 +38,7 @@ def tsignin(s: req_Session, domain: str):
     test_url = domain + "/plugin.php?id=dsu_paulsign:sign&operation=qiandao&infloat=1&sign_as=1&inajax=1"
     plugin = s.get(test_url).text
     if ("插件不存在" in plugin):
-        print ("插件不存在或已关闭")
+        print("插件不存在或已关闭")
         return False
     else:
         signdata = {
@@ -123,11 +56,11 @@ def tsignin(s: req_Session, domain: str):
         rsinj = rsign.text
         print("*" * 30)
         if ("签到成功" in rsinj):
-            print ("每日签到成功")
+            print("每日签到成功")
         elif ("已经签到" in rsinj):
-            print ("今天已经签到过了！")
+            print("今天已经签到过了！")
         else:
-            print ("签到失败（原因不明）！")
+            print("签到失败（原因不明）！")
 
 # 通过抓取用户设置页面的标题检查是否登录成功
 def check_login_status(s: req_Session, number_c: int, domain: str, username:str) -> bool:
@@ -138,7 +71,7 @@ def check_login_status(s: req_Session, number_c: int, domain: str, username:str)
     res.encoding = res_test[0][0]   # 编码 charset
     test_title = res_test[0][1]     # 用户id discuz_uid ,游客为 0
     if len(test_title) != 0:  # 确保正则匹配到了内容，防止出现数组索引越界的情况
-        if(test_title[0] != 0):
+        if(test_title != 0 ):
             print("第", number_c, "个帐户[", username, "]登录[", domain ,"]成功！")
             return True
         else:
@@ -201,21 +134,32 @@ def get_points(s: req_Session, domain: str, username: str, number_c: int):
     else:
         print("请检查你的帐户是否正确！")
 
-def discuz_main():
+def discuz_hostloc_main():
 
-    login_list = [
-        {'domain': 'https://www.ruike1.com/', 'username': 'username', 'password': 'password'},
-    ]
-    
+    # 加载配置
+    push_config = yaml.safe_load(open("config/config.yaml", "r", encoding="utf-8").read())
+
+    login_list = []
+    for key in push_config:
+        if key.startswith('discuz_hostloc_username'):
+            index = key.split('discuz_hostloc_username')[1]
+            domain = push_config['discuz_hostloc_domain']
+            username = push_config['discuz_hostloc_username' + index]
+            password = push_config['discuz_hostloc_password' + index]
+            login_list.append({
+                'discuz_hostloc_domain': domain,
+                'discuz_hostloc_username': username,
+                'discuz_hostloc_password': password
+            })
     today = datetime.now()
     print(today.strftime("%Y-%m-%d %H:%M:%S"))
-    print("共检测到", len(login_list), "个网站, ", len(login_list), "个帐户, 开始获取积分")
+    print("共检测到", len(login_list), "个帐户, 开始获取积分")
 
     # 依次登录帐户获取积分，出现错误时不中断程序继续尝试下一个帐户
     for i in range(len(login_list)):
         try:
-            s = login(login_list[i]["domain"], login_list[i]["username"], login_list[i]["password"])
-            get_points(s, login_list[i]["domain"], login_list[i]["username"] ,i + 1 )
+            s = login(login_list[i]["discuz_hostloc_domain"], login_list[i]["discuz_hostloc_username"], login_list[i]["discuz_hostloc_password"])
+            get_points(s, login_list[i]["discuz_hostloc_domain"], login_list[i]["discuz_hostloc_username"], i + 1 )
             
         except Exception as e:
             print("程序执行异常：" + str(e))
@@ -223,15 +167,3 @@ def discuz_main():
         continue
 
     print("程序执行完毕，获取积分过程结束")
-
-# def main_handler(event, context):
-    # return main()
-
-
-if __name__ == '__main__':
-    print("*" * 30)
-    start = int(time.time())
-    discuz_main()
-    stop = int(time.time())
-    print("运行时间: ",stop-start,"s")
-    print("*" * 30)

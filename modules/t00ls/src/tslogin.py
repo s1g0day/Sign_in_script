@@ -14,7 +14,7 @@ def tslogin(domain, uname, pswd, qesnum, qan):
     }
     rurl=domain+"/login.json"
     s = requests.session()
-    rlogin = s.post(url=rurl, data=logindata)
+    rlogin = s.post(url=rurl, data=logindata, )
     rlogin.raise_for_status()
     rlogj = json.loads(rlogin.text)
     if (rlogj["status"] != "success"):

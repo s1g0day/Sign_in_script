@@ -1,3 +1,4 @@
+import yaml
 import datetime
 
 def calculate_remaining_days(expiration_date):
@@ -17,17 +18,22 @@ def calculate_and_print_remaining_days(data_type, data_name, expiration_date):
     print_remaining_days(data_type, data_name, expiration_date, remaining_days)
 
 def renew_main():
-    datas = [
-        {"type": "VPS", "name": "`https://cloud.tencent.com/`", "expiration_date": datetime.date(2024, 11, 18)},
-        {"type": "VPS", "name": "`https://cloud.tencent.com/`", "expiration_date": datetime.date(2024, 5, 21)},
-        {"type": "VPS", "name": "`https://cloud.tencent.com/`", "expiration_date": datetime.date(2024, 6, 15)},
-        {"type": "VPS", "name": "`https://cloud.tencent.com/`", "expiration_date": datetime.date(2024, 6, 14)},
-        {"type": "VPS", "name": "`https://cloud.tencent.com/`", "expiration_date": datetime.date(2024, 5, 18)},
-        {"type": "VPS", "name": "`https://cloud.tencent.com/`", "expiration_date": datetime.date(2026, 8, 26)},
-        {"type": "Domain", "name": "`https://www.namesilo.com/`", "expiration_date": datetime.date(2024, 4, 24)},
-        {"type": "voice", "name": "`https://voice.google.com/`", "expiration_date": datetime.date(2024, 12, 1)},
-    ]
+    # 加载配置
+    push_config = yaml.safe_load(open(r"config/config.yaml", "r", encoding="utf-8").read())
+    login_list = []
+    for key in push_config:
+        if key.startswith('renew_domain'):
+            index = key.split('renew_domain')[1]
+            type = push_config['renew_type']
+            domain = push_config['renew_domain' + index]
+            expiration_date = push_config['renew_expiration_date' + index]
+            login_list.append({
+                'renew_type': type,
+                'renew_domain': domain,
+                'renew_expiration_date': expiration_date
+            })
+    for data in login_list:
+        expiration_date = datetime.datetime.strptime(data["renew_expiration_date"], "%Y-%m-%d").date()
+        calculate_and_print_remaining_days(data["renew_type"], data["renew_domain"], expiration_date)
 
-    for data in datas:
-        calculate_and_print_remaining_days(data["type"], data["name"], data["expiration_date"])
 # renew_main()

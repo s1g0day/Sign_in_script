@@ -1,4 +1,5 @@
 #!/bin/bash
 
-echo "start run : " `date -u`
-python3 /root/signin/0.2/main.py
+cd /root/Sign_in_script/
+echo "开始运行：$(date -u)"
+python3 main.py
