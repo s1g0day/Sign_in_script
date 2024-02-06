@@ -32,12 +32,15 @@ t00ls_qan: "t00ls_qan"  # 安全提问答案
 renew_type: "VPS"
 renew_domain: "`https://cloud.tencent.com/`"
 renew_expiration_date: "2024-11-18"
+
 renew_type_1: "VPS"
 renew_domain_1: "`https://cloud.tencent.com/`"
 renew_expiration_date_1: "2024-05-21"
+
 renew_type_2: "Domain"
 renew_domain_2: "`https://www.namesilo.com/`"
 renew_expiration_date_2: "2024-04-24"
+
 renew_type_3: "voice"
 renew_domain_3: "`https://voice.google.com/`"
 renew_expiration_date_3: "2024-12-01"

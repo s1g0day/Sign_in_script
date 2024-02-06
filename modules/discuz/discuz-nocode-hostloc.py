@@ -97,6 +97,21 @@ def print_current_points(s: req_Session, domain: str):
         print("无法获取帐户积分，可能页面存在错误或者未登录！")
     time.sleep(5)
 
+# 抓取并打印输出晋级用户组和所需积分
+def Promotion_to_user_group(s: req_Session, domain: str):
+    test_url = domain + "/home.php?mod=spacecp&ac=usergroup"
+    res = s.get(test_url)
+    res.raise_for_status()
+    match_membership = re.search(r'<li id="c2">(.*?)</li>', res.text)
+    match_score = re.search(r'您升级到此用户组还需积分 (\d+)', res.text)
+    if match_membership and match_score:
+        membership = match_membership.group(1)
+        score = match_score.group(1)
+        result = "您距离{} 还需积分：{}".format(membership, score)
+        print(result)
+    else:
+        print("无法获取用户组所需积分，可能页面存在错误或者未登录！")
+    time.sleep(5)
 # 随机生成用户空间链接
 def randomly_gen_uspace_url(domain: str) -> list:
     url_list = []
@@ -131,6 +146,7 @@ def get_points(s: req_Session, domain: str, username: str, number_c: int):
                 print("链接访问异常：" + str(e))
             continue
         print_current_points(s, domain)  # 再次打印帐户当前积分
+        Promotion_to_user_group(s, domain) # 获取晋级所需积分
     else:
         print("请检查你的帐户是否正确！")
 
