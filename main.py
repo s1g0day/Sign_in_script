@@ -17,7 +17,7 @@ if __name__ == '__main__':
         {'title': '🔞 服务器信息','module_name': 'lib.get_public_ip', 'main_function': 'get_public_ip_main'},
         {'title': '🔞 续费通知','module_name': 'modules.renew.renew', 'main_function': 'renew_main'},
         {'title': '🔞 t00ls 签到通知', 'module_name': 'modules.t00ls.t00ls', 'main_function': 't00ls_main'},
-        # {'title': '🔞 hostloc 签到通知','module_name': 'modules.discuz.discuz-nocode-ruike', 'main_function': 'discuz_ruike_main'},
+        # {'title': '🔞 ruike 签到通知','module_name': 'modules.discuz.discuz-nocode-ruike', 'main_function': 'discuz_ruike_main'},
         {'title': '🔞 hostloc 签到通知','module_name': 'modules.discuz.discuz-nocode-hostloc', 'main_function': 'discuz_hostloc_main'},
     ]
 
