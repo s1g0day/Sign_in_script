@@ -3,10 +3,10 @@
 import yaml
 import time
 from datetime import datetime
-from modules.t00ls.src.tslogin import tslogin
-from modules.t00ls.src.tsignin import tsignin
-from modules.t00ls.src.tsactivity import tsactivity_main
-from modules.t00ls.src.domain_query import domain_name_query
+from modules.t00ls.tslogin import tslogin
+from modules.t00ls.tsignin import tsignin
+from modules.t00ls.tsactivity import tsactivity_main
+from modules.t00ls.domain_query import domain_name_query
 
 def t00ls_main():
     # 加载配置

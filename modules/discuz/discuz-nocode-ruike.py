@@ -5,7 +5,7 @@ import time
 import random
 from datetime import datetime
 from requests import Session as req_Session
-from modules.discuz.src.gen_anti_cc_cookies import gen_anti_cc_cookies_main
+from modules.discuz.gen_anti_cc_cookies import gen_anti_cc_cookies_main
 
 # 登录帐户
 def login(domain: str, username: str, password: str) -> req_Session:

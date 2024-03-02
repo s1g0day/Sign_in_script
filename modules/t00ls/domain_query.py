@@ -3,8 +3,8 @@ import time
 import urllib
 import random
 from datetime import datetime
-from modules.t00ls.src.get_captcha import run
-from modules.t00ls.src.get_domain import getdomain
+from modules.t00ls.get_captcha import run
+from modules.t00ls.get_domain import getdomain
 
 def check_domain(s, domain, rlogin):
     today = datetime.now()

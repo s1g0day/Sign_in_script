@@ -1,3 +1,5 @@
+version: "0.5.1"
+
 # ruike 多账户配置
 discuz_ruike_domain: "https://www.ruike1.com/"
 discuz_ruike_username: "username"

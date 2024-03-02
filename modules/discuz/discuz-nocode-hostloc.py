@@ -6,7 +6,7 @@ import yaml
 import random
 from datetime import datetime
 from requests import Session as req_Session
-from modules.discuz.src.gen_anti_cc_cookies import gen_anti_cc_cookies_main
+from modules.discuz.gen_anti_cc_cookies import gen_anti_cc_cookies_main
 
 # 登录帐户
 def login(domain: str, username: str, password: str):
@@ -69,7 +69,7 @@ def check_login_today_status(s: req_Session,  domain: str) -> bool:
     res = s.get(test_url)
     res.raise_for_status()
     # 使用 re.findall 提取日期
-    extracted_dates  = re.findall(r'<td>(\d{4}-\d{2}-\d{2}) \d{2}:\d{2}</td>', res.text)[0]
+    extracted_dates  = re.findall(r'<td>(\d{4}-\d{2}-\d{2}) \d{2}:\d{2}</td>', res.text)[1]
     if extracted_dates:
         current_date = datetime.now().date()
         
