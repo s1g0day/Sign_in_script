@@ -7,10 +7,9 @@ import importlib
 from io import StringIO
 from lib.logo import logo
 from lib.notify import send
-# from modules.get_public_ip import get_public_ip
 warnings.filterwarnings("ignore")
 
-if __name__ == '__main__':
+def sign_main():
     logo()
     # 定义每个文件的模块名和主函数名
     file_data = [
@@ -38,3 +37,7 @@ if __name__ == '__main__':
         # print("params",output)
         if output:
             send(data['title'],output)
+    return "success"
+
+if __name__ == '__main__':
+    sign_main()
