@@ -31,9 +31,11 @@ def getpublicip_ping0():
 def get_public_ip_main():
     # 调用函数获取公网IP
     public_ip, public_location = getpublicip_ping0()
-    print(str(datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
+    
+    print(f"Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")    # 获取当前日期和时间
+    print(f"Timezone: {datetime.now().astimezone().tzname()}")   # 获取当前时区信息
     if public_ip and public_location:
-        print(f"IP: [{public_ip}](https://ping0.cc/ip/{public_ip})")
+        print(f"Server IP: [{public_ip}](https://ping0.cc/ip/{public_ip})")
         print(f"location: {public_location}")
     else:
         print("Failed to retrieve public IP")

@@ -138,28 +138,15 @@ def discuz_ruike_main():
     # 加载配置
     push_config = yaml.safe_load(open("config/config.yaml", "r", encoding="utf-8").read())
 
-    login_list = []
-    for key in push_config:
-        if key.startswith('discuz_ruike_username'):
-            index = key.split('discuz_ruike_username')[1]
-            domain = push_config['discuz_ruike_domain']
-            username = push_config['discuz_ruike_username' + index]
-            password = push_config['discuz_ruike_password' + index]
-            login_list.append({
-                'discuz_ruike_domain': domain,
-                'discuz_ruike_username': username,
-                'discuz_ruike_password': password
-            })
     today = datetime.now()
     print(today.strftime("%Y-%m-%d %H:%M:%S"))
-    print("共检测到", len(login_list), "个帐户, 开始获取积分")
+    print("共检测到", len(push_config['discuz_ruike']), "个帐户, 开始获取积分")
 
     # 依次登录帐户获取积分，出现错误时不中断程序继续尝试下一个帐户
-    for i in range(len(login_list)):
+    for i in range(len(push_config['discuz_ruike'])):
         try:
-            s = login(login_list[i]["discuz_ruike_domain"], login_list[i]["discuz_ruike_username"], login_list[i]["discuz_ruike_password"])
-            get_points(s, login_list[i]["discuz_ruike_domain"], login_list[i]["discuz_ruike_username"], i + 1 )
-            
+            s = login(push_config['discuz_ruike_domain'], push_config['discuz_ruike'][i]['username'], push_config['discuz_ruike'][i]['password'])
+            get_points(s, push_config['discuz_ruike_domain'], push_config['discuz_ruike'][i]['username'], i + 1 )  
         except Exception as e:
             print("程序执行异常：" + str(e))
             

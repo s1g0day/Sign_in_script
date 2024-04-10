@@ -96,10 +96,10 @@ def check_login_status(s: req_Session, number_c: int, domain: str, username:str)
     test_title = res_test[0][1]     # 用户id discuz_uid ,游客为 0
     if len(test_title) != 0:  # 确保正则匹配到了内容，防止出现数组索引越界的情况
         if(test_title != 0 ):
-            print("第", number_c, "个帐户`", username, "`登录`", domain ,"`成功！")
+            print(f"\n第 {number_c} 个帐户 `{username}` 登录 [{domain}]({domain}) 成功")
             return True
         else:
-            print("第", number_c, "个帐户`", username, "`登录`", domain ,"`失败！")
+            print(f"\n第 {number_c} 个帐户 `{username}` 登录 [{domain}]({domain}) 失败")
             return False
     else:
         print("无法在用户设置页面找到标题，该页面存在错误或被防 CC 机制拦截！")
@@ -166,12 +166,11 @@ def get_points(s: req_Session, domain: str, username: str, number_c: int):
                 url = url_list[i]
                 try:
                     res = s.get(url)
-                    res.raise_for_status()
-                    res_test = re.findall(r"charset = '(.*?)', discuz_uid = '(.*?)',", res.text)
-                    res.encoding = res_test[0][0]   # 编码 charset
-                    test_title = re.findall(r"<title>(.*?)的个人资料", res.text)
-            
-                    print("第", i + 1, "个用户`", test_title[0], "`的空间链接访问成功")
+                    # res.raise_for_status()
+                    # res_test = re.findall(r"charset = '(.*?)', discuz_uid = '(.*?)',", res.text)
+                    # res.encoding = res_test[0][0]   # 编码 charset
+                    # test_title = re.findall(r"<title>(.*?)的个人资料", res.text)
+                    # print("第", i + 1, "个用户`", test_title[0], "`的空间链接访问成功")
                     time.sleep(5)  # 每访问一个链接后休眠5秒，以避免触发论坛的防CC机制
                 except Exception as e:
                     print("链接访问异常：" + str(e))
@@ -186,28 +185,15 @@ def discuz_hostloc_main():
     # 加载配置
     push_config = yaml.safe_load(open("config/config.yaml", "r", encoding="utf-8").read())
 
-    login_list = []
-    for key in push_config:
-        if key.startswith('discuz_hostloc_username'):
-            index = key.split('discuz_hostloc_username')[1]
-            domain = push_config['discuz_hostloc_domain']
-            username = push_config['discuz_hostloc_username' + index]
-            password = push_config['discuz_hostloc_password' + index]
-            login_list.append({
-                'discuz_hostloc_domain': domain,
-                'discuz_hostloc_username': username,
-                'discuz_hostloc_password': password
-            })
     today = datetime.now()
     print(today.strftime("%Y-%m-%d %H:%M:%S"))
-    print("共检测到", len(login_list), "个帐户, 开始获取积分")
+    print("共检测到", len(push_config['discuz_hostloc']), "个帐户, 开始获取积分")
 
     # 依次登录帐户获取积分，出现错误时不中断程序继续尝试下一个帐户
-    for i in range(len(login_list)):
+    for i in range(len(push_config['discuz_hostloc'])):
         try:
-            s = login(login_list[i]["discuz_hostloc_domain"], login_list[i]["discuz_hostloc_username"], login_list[i]["discuz_hostloc_password"])
-            get_points(s, login_list[i]["discuz_hostloc_domain"], login_list[i]["discuz_hostloc_username"], i + 1 )
-            
+            s = login(push_config['discuz_hostloc_domain'], push_config['discuz_hostloc'][i]['username'], push_config['discuz_hostloc'][i]['password'])
+            get_points(s, push_config['discuz_hostloc_domain'], push_config['discuz_hostloc'][i]['username'], i + 1 ) 
         except Exception as e:
             print("程序执行异常：" + str(e))
             

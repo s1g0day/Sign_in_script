@@ -12,29 +12,15 @@ def t00ls_main():
     # 加载配置
     push_config = yaml.safe_load(open("config/config.yaml", "r", encoding="utf-8").read())
 
-    login_list = []
-    for key in push_config:
-        if key.startswith('t00ls_username'):
-            index = key.split('t00ls_username')[1]
-            domain = push_config['t00ls_domain']
-            username = push_config['t00ls_username' + index]
-            password = push_config['t00ls_password' + index]
-            qesnum = push_config['t00ls_qesnum' + index]
-            qan = push_config['t00ls_qan' + index]
-            login_list.append({
-                't00ls_domain': domain,
-                't00ls_username': username,
-                't00ls_password': password
-            })
     today = datetime.now()
     print(today.strftime("%Y-%m-%d %H:%M:%S"))
-    print("共检测到", len(login_list), "个帐户, 开始获取积分")
+    print("共检测到", len(push_config['t00ls']), "个帐户, 开始获取积分")
 
     # 依次登录帐户获取积分，出现错误时不中断程序继续尝试下一个帐户
-    for i in range(len(login_list)):
+    for i in range(len(push_config['t00ls'])):
         try:
             # 登录t00ls
-            s,rlogin,rlogj = tslogin(push_config["t00ls_domain"], push_config["t00ls_username"], push_config["t00ls_password"], push_config["t00ls_qesnum"], push_config["t00ls_qan"])
+            s,rlogin,rlogj = tslogin(push_config["t00ls_domain"], push_config['t00ls'][i]['username'], push_config['t00ls'][i]['password'], push_config['t00ls'][i]['qesnum'], push_config['t00ls'][i]['qan'])
             time.sleep(1)
             # 查询签到天数及活跃度
             tsactivity_main(s, push_config["t00ls_domain"])
