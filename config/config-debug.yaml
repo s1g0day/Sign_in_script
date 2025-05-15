@@ -1,4 +1,4 @@
-version: "0.5.3"
+version: "0.5.6"
 
 # ruike 多账户配置
 discuz_ruike_domain: "https://www.ruike1.com/"
@@ -30,6 +30,9 @@ t00ls:
     password: "t00ls_password"
     qesnum: 1
     qan: "t00ls_qan"
+
+threatbook_domain: "https://x.threatbook.com"
+threatbook_cookie: ""
 
 # 到期提醒
 renewals:

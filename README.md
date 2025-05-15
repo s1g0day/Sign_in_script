@@ -4,7 +4,7 @@
 
 ## 简单使用
 
-目前支持的系统：t00ls、hostloc、ruike等
+目前支持的系统：t00ls、hostloc、ruike、threatbook等
 
 ### 1、修改配置文件
 

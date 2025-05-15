@@ -7,7 +7,7 @@ def calculate_remaining_days(expiration_date):
     return remaining_days
 
 def print_remaining_days(data_type, data_name, expiration_date, remaining_days):
-    if remaining_days == 25 or (remaining_days < 14 and remaining_days > 0):
+    if remaining_days == 20 or (remaining_days < 14 and remaining_days > 0):
         print("类型：", data_type)
         print("域名：", data_name)
         print("到期时间：", expiration_date)
