@@ -1,5 +1,6 @@
 import yaml
 import datetime
+from lib.logger_init import logger
 
 def calculate_remaining_days(expiration_date):
     current_date = datetime.date.today()
@@ -7,14 +8,14 @@ def calculate_remaining_days(expiration_date):
     return remaining_days
 
 def print_remaining_days(data_type, data_name, expiration_date, remaining_days):
-    if remaining_days == 20 or (remaining_days < 14 and remaining_days > 0):
-        print("类型：", data_type)
-        print("域名：", data_name)
-        print("到期时间：", expiration_date)
-        print("剩余天数：", remaining_days)
+    logger.info(f"类型：{data_type}")
+    logger.info(f"域名：{data_name}")
+    logger.info(f"到期时间：{expiration_date}")
+    logger.info(f"剩余天数：{remaining_days}")
 
 def calculate_and_print_remaining_days(data_type, data_name, expiration_date):
     remaining_days = calculate_remaining_days(expiration_date)
+    logger.info(f"调用 print_remaining_days 输出")
     print_remaining_days(data_type, data_name, expiration_date, remaining_days)
 
 def renew_main():

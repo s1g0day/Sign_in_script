@@ -414,5 +414,3 @@ class ThreatbookAuto:
 def threatbook_main():
     auto = ThreatbookAuto()
     auto.run()
-
-threatbook_main()

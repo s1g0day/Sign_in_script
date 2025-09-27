@@ -6,6 +6,7 @@ import random
 from datetime import datetime
 from requests import Session as req_Session
 from modules.discuz.gen_anti_cc_cookies import gen_anti_cc_cookies_main
+from lib.logger_init import logger
 
 # 登录帐户
 def login(domain: str, username: str, password: str):
@@ -38,6 +39,7 @@ def tsignin(s: req_Session, domain: str):
     test_url = domain + "/plugin.php?id=dsu_paulsign:sign&operation=qiandao&infloat=1&sign_as=1&inajax=1"
     plugin = s.get(test_url).text
     if ("插件不存在" in plugin):
+        logger.warning("签到插件不存在或已关闭")
         print("签到插件不存在或已关闭")
         return False
     else:
@@ -54,12 +56,16 @@ def tsignin(s: req_Session, domain: str):
         rsign = s.post(url=test_url, data=signdata,headers=cookie)
         rsign.raise_for_status()
         rsinj = rsign.text
+        logger.info("*" * 30)
         print("*" * 30)
         if ("签到成功" in rsinj):
+            logger.info("每日签到成功")
             print("每日签到成功")
         elif ("已经签到" in rsinj):
+            logger.info("今天已经签到过了！")
             print("今天已经签到过了！")
         else:
+            logger.error("签到失败（原因不明）！")
             print("签到失败（原因不明）！")
 
 # 通过抓取用户设置页面的标题检查是否登录成功
@@ -83,6 +89,7 @@ def check_login_today_status(s: req_Session,  domain: str) -> bool:
             # print(f"{extracted_dates} 不是当天日期")
             return False
     else:
+        logger.warning("未找到日期")
         print("未找到日期")
 
 # 通过抓取用户设置页面的标题检查是否登录成功
@@ -95,12 +102,15 @@ def check_login_status(s: req_Session, number_c: int, domain: str, username:str)
     test_title = res_test[0][1]     # 用户id discuz_uid ,游客为 0
     if len(test_title) != 0:  # 确保正则匹配到了内容，防止出现数组索引越界的情况
         if(test_title != 0 ):
-            print("第", number_c, "个帐户", username, "登录`", domain ,"`成功！")
+            logger.info(f"第{number_c}个账户{username} 登录`{domain}`成功！")
+            print("第", number_c, "个账户", username, "登录`", domain ,"`成功！")
             return True
         else:
-            print("第", number_c, "个帐户", username, "登录`", domain ,"`失败！")
+            logger.error(f"第{number_c}个账户{username} 登录`{domain}`失败！")
+            print("第", number_c, "个账户", username, "登录`", domain ,"`失败！")
             return False
     else:
+        logger.error("无法在用户设置页面找到标题，该页面存在错误或被防 CC 机制拦截！")
         print("无法在用户设置页面找到标题，该页面存在错误或被防 CC 机制拦截！")
         return False
 
@@ -115,9 +125,11 @@ def print_current_points(s: req_Session, domain: str):
     points = re.findall(r"积分: (\d+)", res.text)
 
     if len(points) != 0:  # 确保正则匹配到了内容，防止出现数组索引越界的情况
-        print("帐户当前积分：" + points[0])
+        logger.info(f"账户当前积分：{points[0]}")
+        print("账户当前积分：" + points[0])
     else:
-        print("无法获取帐户积分，可能页面存在错误或者未登录！")
+        logger.warning("无法获取账户积分，可能页面存在错误或者未登录！")
+        print("无法获取账户积分，可能页面存在错误或者未登录！")
     time.sleep(5)
 
 # 抓取并打印输出晋级用户组和所需积分
@@ -131,8 +143,10 @@ def Promotion_to_user_group(s: req_Session, domain: str):
         membership = match_membership.group(1)
         score = match_score.group(1)
         result = "您距离{} 还需积分：{}".format(membership, score)
+        logger.info(result)
         print(result)
     else:
+        logger.warning("无法获取用户组所需积分，可能页面存在错误或者未登录！")
         print("无法获取用户组所需积分，可能页面存在错误或者未登录！")
     time.sleep(5)
 
@@ -151,11 +165,13 @@ def randomly_gen_uspace_url(domain: str) -> list:
 # 依次访问随机生成的用户空间链接获取积分
 def get_points(s: req_Session, domain: str, username: str, number_c: int):
     if check_login_status(s, number_c, domain ,username):
-        print_current_points(s, domain)  # 打印帐户当前积分
+        logger.info("打印账户当前积分")
+        print_current_points(s, domain)  # 打印账户当前积分
         url_list = randomly_gen_uspace_url(domain)
 
         if check_login_today_status(s, domain):
-            print("第", number_c, "个帐户", username, "已完成今日积分任务")
+            logger.info(f"第{number_c}个账户{username} 已完成今日积分任务")
+            print("第", number_c, "个账户", username, "已完成今日积分任务")
         else:
             # 依次访问用户空间链接获取积分，出现错误时不中断程序继续尝试访问下一个链接
             for i in range(len(url_list)):

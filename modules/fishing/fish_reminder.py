@@ -7,6 +7,7 @@
 
 from datetime import date, timedelta, datetime
 from lunar_python import Lunar, Solar
+from lib.logger_init import logger
 # from modules.threatbook.threatbook import ThreatbookAuto
 
 class FishReminder:
@@ -199,10 +200,13 @@ def fishReminder_main():
     # auto = ThreatbookAuto()
     reminder = FishReminder()
     message = reminder.generate_message()  # Get the generated message
+    logger.info(message)
     print(message)
     if is_working_time():      
         # auto.fish_reminder_send_article(message)
+        logger.info("测试")
         print("测试")
     else:
-        print("当前时间不在工作时间，不发送消息") 
+        logger.info("当前时间不在工作时间，不发送消息")
+        print("当前时间不在工作时间，不发送消息")
     return message
