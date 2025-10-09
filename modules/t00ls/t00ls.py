@@ -2,7 +2,7 @@
 # -*- coding: utf8 -*-
 # author: s1g0day
 # create: 2025-02-27 00:00
-# update: 2025-09-04 09:16
+# update: 2025-10-09 09:50
 import re
 import yaml
 import time
@@ -172,7 +172,7 @@ def get_online_time(s, domain):
         spaceurl.raise_for_status()
         # 提取在线时间
         match = re.search(r'<p>在线时间: 总计在线 <em>([\d.]+)</em> 小时, 本月在线 <em>([\d.]+)</em> 小时', spaceurl.text)
-        # print(response1.text)
+        # print(spaceurl.text)
         if match:
             total_hours = match.group(1)
             month_hours = match.group(2)
@@ -183,7 +183,7 @@ def get_online_time(s, domain):
             logger.warning("未能提取在线时间信息，页面结构可能已变")
         
         # 提取积分信息
-        points_match = re.search(r'<h3 class=\"blocktitle lightlink\">积分: ([\\d]+)</h3>', spaceurl.text)
+        points_match = re.search(r'<h3 class="blocktitle lightlink">积分: (\d+)</h3>', spaceurl.text)
         if points_match:
             print(f"积分: {points_match.group(1)}")
             logger.info(f"积分: {points_match.group(1)}")
@@ -191,7 +191,7 @@ def get_online_time(s, domain):
             print("未能提取积分信息")
             logger.warning("未能提取积分信息")
         # 提取TCV, TuBi, 存款, 生杀币
-        details_match = re.search(r'<p>TCV: ([\\d]+) ,&nbsp;TuBi: ([\\d]+) ,&nbsp;存款: ([\\d]+) ,&nbsp;生杀币: ([\\d]+) </p>', spaceurl.text)
+        details_match = re.search(r'<p>TCV: (\d+) ,&nbsp;TuBi: (\d+) ,&nbsp;存款: (\d+) ,&nbsp;生杀币: (\d+) </p>', spaceurl.text)
         if details_match:
             print(f"TCV: {details_match.group(1)}, TuBi: {details_match.group(2)}, 存款: {details_match.group(3)}, 生杀币: {details_match.group(4)}")
             logger.info(f"TCV: {details_match.group(1)}, TuBi: {details_match.group(2)}, 存款: {details_match.group(3)}, 生杀币: {details_match.group(4)}")
