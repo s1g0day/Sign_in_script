@@ -2,7 +2,7 @@
 # -*- coding: utf8 -*-
 # author: s1g0day
 # create: 2025-02-27 00:00
-# update: 2025-10-09 09:50
+# update: 2026-01-21 11:00
 import re
 import yaml
 import time
@@ -89,7 +89,7 @@ def check_domain(s, domain, rlogin):
         tblog = json.loads(tbreq.text)
         loglen = len(tblog["loglist"])
         allreason = ""
-        for i in range(loglen):
+        for i in range(1):
             logday = tblog["loglist"][i]["timeline"]
             logdatetime = datetime.strptime(logday, "%Y-%m-%d %H:%M:%S")
             logdatetime = logdatetime.strftime("%Y-%m-%d")
@@ -98,9 +98,10 @@ def check_domain(s, domain, rlogin):
                 allreason += tblog["loglist"][i]["reason"]
             else:
                 break
-        if ("查询新com域名" in allreason):
-            print("今天已经查询过域名了!\n提示信息：",allreason)
-            logger.info(f"今天已经查询过域名了! 提示信息：{allreason}")
+        if ("域名" in allreason):
+            print(f"今天已经查询过域名了, 域名：`{tblog['loglist'][i]['mark']}`")
+            logger.info(f"今天已经查询过域名了, 域名：`{tblog['loglist'][i]['mark']}`")
+
             return True
         else:
             print("今天还未查询过域名")
@@ -115,13 +116,15 @@ def domain_name_query(s, domain, rlogin, rlogj):
             print("域名查询失败")
             logger.warning("域名查询失败")
         else:
-            print("尚未解决 cloudflare turnstile 验证码")
-            logger.warning("尚未解决 cloudflare turnstile 验证码")
-            # resjson = getdomain()
-            # for i in range(3):
-            #     domainurl = resjson["data"]["list"][i]["domain"]
-            #     print("第[ %d ]次查询: `%s`" % (frequency,domainurl))
-            #     frequency += 1
+            print("尚未解决 cloudflare turnstile 验证码,请人工查询")
+            logger.warning("尚未解决 cloudflare turnstile 验证码,请人工查询")
+            resjson = getdomain()
+            for i in range(3):
+                domainurl = resjson["data"]["list"][i]["domain"]
+                print(f"第[ {frequency} ]次查询: `{domainurl}`")
+                logger.info(f"第[ {frequency} ]次查询: `{domainurl}`")
+                frequency += 1
+
 
                 # '''获取验证码'''
                 # srcid = run(s, domain, tt_username, tt_password, tt_typeid)
@@ -202,8 +205,10 @@ def get_online_time(s, domain):
         print("get_online_time 异常:", e)
         logger.error(f"get_online_time 异常: {e}")
 
-# 检查签到天数及活跃度
 def tsactivity_main(s, domain):
+    '''
+    查询签到天数及活跃度
+    '''
 
     try:
         rurl = domain + '/members-profile.html'
@@ -264,6 +269,31 @@ def tslogin(domain, uname, pswd, qesnum, qan):
     }
     rurl=domain+"/login.json"
     s = requests.session()
+    s.headers.update({
+        'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+        'accept-language': 'zh-CN,zh-TW;q=0.9,zh;q=0.8,en-US;q=0.7,en;q=0.6',
+        'cache-control': 'no-cache',
+        'content-type': 'application/x-www-form-urlencoded',
+        'origin': domain,
+        'pragma': 'no-cache',
+        'priority': 'u=0, i',
+        'referer': domain + '/login.html',
+        'sec-ch-ua': '"Google Chrome";v="143", "Chromium";v="143", "Not A(Brand";v="24"',
+        'sec-ch-ua-arch': '"x86"',
+        'sec-ch-ua-bitness': '"64"',
+        'sec-ch-ua-full-version': '"143.0.7499.193"',
+        'sec-ch-ua-full-version-list': '"Google Chrome";v="143.0.7499.193", "Chromium";v="143.0.7499.193", "Not A(Brand";v="24.0.0.0"',
+        'sec-ch-ua-mobile': '?0',
+        'sec-ch-ua-model': '""',
+        'sec-ch-ua-platform': '"Windows"',
+        'sec-ch-ua-platform-version': '"10.0.0"',
+        'sec-fetch-dest': 'document',
+        'sec-fetch-mode': 'navigate',
+        'sec-fetch-site': 'same-origin',
+        'sec-fetch-user': '?1',
+        'upgrade-insecure-requests': '1',
+        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36',
+    })
     rlogin = s.post(url=rurl, data=logindata, )
     rlogin.raise_for_status()
     rlogj = json.loads(rlogin.text)
@@ -300,7 +330,7 @@ def t00ls_main():
             tsignin(s, push_config["t00ls_domain"], rlogj)
             time.sleep(1)
             # 域名查询
-            # domain_name_query(s, push_config["t00ls_domain"], rlogin, rlogj)
+            domain_name_query(s, push_config["t00ls_domain"], rlogin, rlogj)
             
         except Exception as e:
             print("程序执行异常：" + str(e))

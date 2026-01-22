@@ -1,4 +1,4 @@
-version: "0.5.7"
+version: "0.6.2"
 
 # ruike 多账户配置
 discuz_ruike_domain: "https://www.ruike1.com/"

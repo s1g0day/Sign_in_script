@@ -1,7 +1,7 @@
 #Filename: fish_reminder.py
 #Author: s1g0day
 #Date: 2025/02/27
-#Update: 2025/05/12
+#Update: 2025/12/29
 #Description: 摸鱼提醒
 
 
@@ -62,43 +62,43 @@ class FishReminder:
                         return None
                 return None
 
-        # 定义节假日及放假天数
-        holidays = {
-            "元旦": (date(current_year, 1, 1), 3),
-            "春节": (get_lunar_holiday(current_year, 1, 1), 7),     # 农历正月初一
-            "清明节": (date(current_year, 4, 5), 3),
-            "劳动节": (date(current_year, 5, 1), 5),
-            "端午节": (get_lunar_holiday(current_year, 5, 5), 3),   # 农历五月初五
-            "中秋节": (get_lunar_holiday(current_year, 8, 15), 3),  # 农历八月十五
-            "国庆节": (date(current_year, 10, 1), 7),
-            "元旦": (date(next_year, 1, 1), 3)
-        }
+        # 定义节假日规则
+        holiday_rules = [
+            {"name": "元旦", "type": "solar", "month": 1, "day": 1, "days": 3},
+            {"name": "春节", "type": "lunar", "month": 1, "day": 1, "days": 7},
+            {"name": "清明节", "type": "solar", "month": 4, "day": 5, "days": 3},
+            {"name": "劳动节", "type": "solar", "month": 5, "day": 1, "days": 5},
+            {"name": "端午节", "type": "lunar", "month": 5, "day": 5, "days": 3},
+            {"name": "中秋节", "type": "lunar", "month": 8, "day": 15, "days": 3},
+            {"name": "国庆节", "type": "solar", "month": 10, "day": 1, "days": 7}
+        ]
         
-        # 如果当前日期已过，则使用下一年的日期
         result = {}
-        for name, (holiday_date, days) in holidays.items():
+        for rule in holiday_rules:
+            name = rule["name"]
+            days = rule["days"]
+            
+            # 计算今年的节日日期
+            if rule["type"] == "solar":
+                holiday_date = date(current_year, rule["month"], rule["day"])
+            else:
+                holiday_date = get_lunar_holiday(current_year, rule["month"], rule["day"])
+            
             if holiday_date is None:
                 continue
+
+            # 如果今年已过，计算明年的日期
             if holiday_date < self.today:
-                if isinstance(holiday_date, date):
-                    # 公历节日
-                    new_date = date(next_year, holiday_date.month, holiday_date.day)
-                    solar = Solar(new_date.year, new_date.month, new_date.day, 0, 0, 0)
-                    lunar = solar.getLunar()
-                    lunar_str = f"{lunar.getMonthInChinese()}月{lunar.getDayInChinese()}"
+                if rule["type"] == "solar":
+                    holiday_date = date(next_year, rule["month"], rule["day"])
                 else:
-                    # 农历节日
-                    lunar_date = Lunar.fromDate(holiday_date)
-                    new_date = get_lunar_holiday(next_year, lunar_date.getMonth(), lunar_date.getDay())
-                    solar = Solar(new_date.year, new_date.month, new_date.day, 0, 0, 0)
-                    lunar = solar.getLunar()
-                    lunar_str = f"{lunar.getMonthInChinese()}月{lunar.getDayInChinese()}"
-                result[f"{name}{'(放假%d天)' % days if days > 0 else ''} [阳历：{new_date.month}月{new_date.day}日 农历：{lunar_str}]"] = (new_date, days)
-            else:
+                    holiday_date = get_lunar_holiday(next_year, rule["month"], rule["day"])
+            
+            if holiday_date:
                 solar = Solar(holiday_date.year, holiday_date.month, holiday_date.day, 0, 0, 0)
                 lunar = solar.getLunar()
                 lunar_str = f"{lunar.getMonthInChinese()}月{lunar.getDayInChinese()}"
-                result[f"{name}{'(放假%d天)' % days if days > 0 else ''} [阳历：{holiday_date.month}月{holiday_date.day}日 农历：{lunar_str}]"] = (holiday_date, days)
+                result[f"{name}{'(%d天)' % days if days > 0 else ''} [{holiday_date.year}-{holiday_date.month}-{holiday_date.day} 农:{lunar_str}]"] = (holiday_date, days)
                 
         return {name: (d - self.today).days for name, (d, _) in result.items()}
 
@@ -159,14 +159,14 @@ class FishReminder:
         today_holiday = None
         for name, days in holidays.items():
             if days == 0:
-                holiday_name = name.split(" [")[0]  # 去掉日期部分
-                today_special = f"🎊 今天是{holiday_name}，{'休息日' if '(放假' in name else '节假日'}，祝您节日快乐！\n\n"
+                holiday_name = name.split(" [")[0].split("(")[0]  # 去掉日期部分和天数
+                today_special = f"🎊 今天是{holiday_name}，{'休息日' if '(' in name else '节假日'}，祝您节日快乐！\n\n"
                 break
 
         message = f"""【摸鱼办】提醒您：现在时间是{datetime.now().strftime('%Y年%m月%d日 %H:%M:%S')}，
 第{week_number}周，农历{lunar_str}，{current_weekday} {special_reminder}😜
 
-{today_special}2025 年已经过去 {self.days_passed} 天 ⌛️！
+{today_special}{self.today.year} 年已经过去 {self.days_passed} 天 ⌛️！
 你好，摸鱼人！👨‍💻 工作再忙，一定不要忘记摸鱼哦 🐟！
 有事没事起身去茶水间 ☕️，去厕所 🚾，去走廊走走 🚶，去找同事聊聊八卦 🆕！别老在工位上坐着，钱是老板的 👨‍💼 但命是自己的 🤷‍♂️。
 
@@ -193,20 +193,20 @@ class FishReminder:
 # 判断现在时间是否是在8点到18点之间
 def is_working_time():
     now = datetime.now()
-    if 8 <= now.hour < 10:
+    if 8 <= now.hour < 18:
         return True
 
 def fishReminder_main():
-    # auto = ThreatbookAuto()
     reminder = FishReminder()
     message = reminder.generate_message()  # Get the generated message
     logger.info(message)
     print(message)
-    if is_working_time():      
-        # auto.fish_reminder_send_article(message)
-        logger.info("测试")
-        print("测试")
-    else:
-        logger.info("当前时间不在工作时间，不发送消息")
-        print("当前时间不在工作时间，不发送消息")
-    return message
+    # auto = ThreatbookAuto()
+    # if is_working_time():      
+    #     # auto.fish_reminder_send_article(message)
+    #     logger.info("测试")
+    #     print("测试")
+    # else:
+    #     logger.info("当前时间不在工作时间，不发送消息")
+    #     print("当前时间不在工作时间，不发送消息")
+    # return message
